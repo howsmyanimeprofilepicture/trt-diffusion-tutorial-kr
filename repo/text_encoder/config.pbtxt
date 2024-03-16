@@ -1,0 +1,23 @@
+name: "text_encoder"
+platform: "tensorrt_plan"
+default_model_filename: "text_encoder.plan"
+max_batch_size: 0
+input: [
+  {
+    name: "input_ids",
+    data_type: TYPE_INT32,
+    dims: [-1, 2, 77]
+  },
+  {
+    name: "attention_mask",
+    data_type: TYPE_INT32,
+    dims: [-1, 2, 77]
+  }
+]
+output: [
+  {
+    name: "encoder_hidden_states",
+    data_type: TYPE_FP32,
+    dims: [-1, 2, 77, 768]
+  }
+]

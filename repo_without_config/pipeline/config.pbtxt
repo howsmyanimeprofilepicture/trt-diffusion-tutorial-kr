@@ -1,0 +1,688 @@
+name: "pipeline"
+max_batch_size: 0
+platform: "ensemble"
+input: [
+    { name: "prompts", data_type: TYPE_STRING, dims: [-1, 1] }
+]
+output: [
+    {
+        name: "output",
+        data_type: TYPE_FP32,
+        dims: [-1, 3, 512, 512]    
+    }
+]
+ensemble_scheduling: {
+    step: [
+        {
+            model_name: "tokenizer",
+            model_version: -1,
+            input_map: [{ key: "prompts", value: "prompts" }],
+            output_map: [
+                { key: "input_ids", value: "input_ids" },
+                { key: "attention_mask", value: "attention_mask" },
+                { key: "sample", value: "sample" },
+                { key: "timestep", value: "timestep"  },
+                { key: "i",  value: "i"}
+            ]
+        },
+        {
+            model_name: "text_encoder",
+            model_version: -1,
+            input_map: [
+                { key: "input_ids", value: "input_ids" },
+                { key: "attention_mask", value: "attention_mask" }
+            ],
+            output_map: [{ key: "encoder_hidden_states", value: "encoder_hidden_states"}]
+        },
+        {
+            model_name: "unet",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample" },
+                { key: "timestep", value: "timestep" },
+                { key: "encoder_hidden_states", value: "encoder_hidden_states"}    
+            ],
+            output_map: [{ key: "noise", value: "noise" }]
+        },
+        {
+            model_name: "scheduler",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample" },
+                { key: "noise", value: "noise" },
+                { key: "i", value: "i" }
+            ],
+            output_map: [
+                { key: "sample", value: "sample0" },
+                { key: "timestep", value: "timestep0" },
+                { key: "i", value: "i0" }
+            ]
+        },
+        
+        {
+            model_name: "unet",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample0" },
+                { key: "timestep", value: "timestep0" },
+                { key: "encoder_hidden_states", value: "encoder_hidden_states"}
+            ],
+            output_map: [{ key: "noise", value: "noise0" }]
+        },
+        {
+            model_name: "scheduler",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample0" },
+                { key: "noise", value: "noise0" },
+                { key: "i", value: "i0" }
+            ],
+            output_map: [
+                { key: "sample", value: "sample1" },
+                { key: "timestep", value: "timestep1" },
+                { key: "i", value: "i1" }
+            ]
+        },
+
+
+        {
+            model_name: "unet",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample1" },
+                { key: "timestep", value: "timestep1" },
+                { key: "encoder_hidden_states", value: "encoder_hidden_states"}
+            ],
+            output_map: [{ key: "noise", value: "noise1" }]
+        },
+        {
+            model_name: "scheduler",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample1" },
+                { key: "noise", value: "noise1" },
+                { key: "i", value: "i1" }
+            ],
+            output_map: [
+                { key: "sample", value: "sample2" },
+                { key: "timestep", value: "timestep2" },
+                { key: "i", value: "i2" }
+            ]
+        },
+
+
+        {
+            model_name: "unet",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample2" },
+                { key: "timestep", value: "timestep2" },
+                { key: "encoder_hidden_states", value: "encoder_hidden_states"}
+            ],
+            output_map: [{ key: "noise", value: "noise2" }]
+        },
+        {
+            model_name: "scheduler",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample2" },
+                { key: "noise", value: "noise2" },
+                { key: "i", value: "i2" }
+            ],
+            output_map: [
+                { key: "sample", value: "sample3" },
+                { key: "timestep", value: "timestep3" },
+                { key: "i", value: "i3" }
+            ]
+        },
+
+
+        {
+            model_name: "unet",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample3" },
+                { key: "timestep", value: "timestep3" },
+                { key: "encoder_hidden_states", value: "encoder_hidden_states"}
+            ],
+            output_map: [{ key: "noise", value: "noise3" }]
+        },
+        {
+            model_name: "scheduler",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample3" },
+                { key: "noise", value: "noise3" },
+                { key: "i", value: "i3" }
+            ],
+            output_map: [
+                { key: "sample", value: "sample4" },
+                { key: "timestep", value: "timestep4" },
+                { key: "i", value: "i4" }
+            ]
+        },
+
+
+        {
+            model_name: "unet",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample4" },
+                { key: "timestep", value: "timestep4" },
+                { key: "encoder_hidden_states", value: "encoder_hidden_states"}
+            ],
+            output_map: [{ key: "noise", value: "noise4" }]
+        },
+        {
+            model_name: "scheduler",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample4" },
+                { key: "noise", value: "noise4" },
+                { key: "i", value: "i4" }
+            ],
+            output_map: [
+                { key: "sample", value: "sample5" },
+                { key: "timestep", value: "timestep5" },
+                { key: "i", value: "i5" }
+            ]
+        },
+
+
+        {
+            model_name: "unet",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample5" },
+                { key: "timestep", value: "timestep5" },
+                { key: "encoder_hidden_states", value: "encoder_hidden_states"}
+            ],
+            output_map: [{ key: "noise", value: "noise5" }]
+        },
+        {
+            model_name: "scheduler",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample5" },
+                { key: "noise", value: "noise5" },
+                { key: "i", value: "i5" }
+            ],
+            output_map: [
+                { key: "sample", value: "sample6" },
+                { key: "timestep", value: "timestep6" },
+                { key: "i", value: "i6" }
+            ]
+        },
+
+
+        {
+            model_name: "unet",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample6" },
+                { key: "timestep", value: "timestep6" },
+                { key: "encoder_hidden_states", value: "encoder_hidden_states"}
+            ],
+            output_map: [{ key: "noise", value: "noise6" }]
+        },
+        {
+            model_name: "scheduler",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample6" },
+                { key: "noise", value: "noise6" },
+                { key: "i", value: "i6" }
+            ],
+            output_map: [
+                { key: "sample", value: "sample7" },
+                { key: "timestep", value: "timestep7" },
+                { key: "i", value: "i7" }
+            ]
+        },
+
+
+        {
+            model_name: "unet",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample7" },
+                { key: "timestep", value: "timestep7" },
+                { key: "encoder_hidden_states", value: "encoder_hidden_states"}
+            ],
+            output_map: [{ key: "noise", value: "noise7" }]
+        },
+        {
+            model_name: "scheduler",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample7" },
+                { key: "noise", value: "noise7" },
+                { key: "i", value: "i7" }
+            ],
+            output_map: [
+                { key: "sample", value: "sample8" },
+                { key: "timestep", value: "timestep8" },
+                { key: "i", value: "i8" }
+            ]
+        },
+
+
+        {
+            model_name: "unet",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample8" },
+                { key: "timestep", value: "timestep8" },
+                { key: "encoder_hidden_states", value: "encoder_hidden_states"}
+            ],
+            output_map: [{ key: "noise", value: "noise8" }]
+        },
+        {
+            model_name: "scheduler",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample8" },
+                { key: "noise", value: "noise8" },
+                { key: "i", value: "i8" }
+            ],
+            output_map: [
+                { key: "sample", value: "sample9" },
+                { key: "timestep", value: "timestep9" },
+                { key: "i", value: "i9" }
+            ]
+        },
+
+
+        {
+            model_name: "unet",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample9" },
+                { key: "timestep", value: "timestep9" },
+                { key: "encoder_hidden_states", value: "encoder_hidden_states"}
+            ],
+            output_map: [{ key: "noise", value: "noise9" }]
+        },
+        {
+            model_name: "scheduler",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample9" },
+                { key: "noise", value: "noise9" },
+                { key: "i", value: "i9" }
+            ],
+            output_map: [
+                { key: "sample", value: "sample10" },
+                { key: "timestep", value: "timestep10" },
+                { key: "i", value: "i10" }
+            ]
+        },
+
+
+        {
+            model_name: "unet",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample10" },
+                { key: "timestep", value: "timestep10" },
+                { key: "encoder_hidden_states", value: "encoder_hidden_states"}
+            ],
+            output_map: [{ key: "noise", value: "noise10" }]
+        },
+        {
+            model_name: "scheduler",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample10" },
+                { key: "noise", value: "noise10" },
+                { key: "i", value: "i10" }
+            ],
+            output_map: [
+                { key: "sample", value: "sample11" },
+                { key: "timestep", value: "timestep11" },
+                { key: "i", value: "i11" }
+            ]
+        },
+
+
+        {
+            model_name: "unet",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample11" },
+                { key: "timestep", value: "timestep11" },
+                { key: "encoder_hidden_states", value: "encoder_hidden_states"}
+            ],
+            output_map: [{ key: "noise", value: "noise11" }]
+        },
+        {
+            model_name: "scheduler",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample11" },
+                { key: "noise", value: "noise11" },
+                { key: "i", value: "i11" }
+            ],
+            output_map: [
+                { key: "sample", value: "sample12" },
+                { key: "timestep", value: "timestep12" },
+                { key: "i", value: "i12" }
+            ]
+        },
+
+
+        {
+            model_name: "unet",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample12" },
+                { key: "timestep", value: "timestep12" },
+                { key: "encoder_hidden_states", value: "encoder_hidden_states"}
+            ],
+            output_map: [{ key: "noise", value: "noise12" }]
+        },
+        {
+            model_name: "scheduler",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample12" },
+                { key: "noise", value: "noise12" },
+                { key: "i", value: "i12" }
+            ],
+            output_map: [
+                { key: "sample", value: "sample13" },
+                { key: "timestep", value: "timestep13" },
+                { key: "i", value: "i13" }
+            ]
+        },
+
+
+        {
+            model_name: "unet",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample13" },
+                { key: "timestep", value: "timestep13" },
+                { key: "encoder_hidden_states", value: "encoder_hidden_states"}
+            ],
+            output_map: [{ key: "noise", value: "noise13" }]
+        },
+        {
+            model_name: "scheduler",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample13" },
+                { key: "noise", value: "noise13" },
+                { key: "i", value: "i13" }
+            ],
+            output_map: [
+                { key: "sample", value: "sample14" },
+                { key: "timestep", value: "timestep14" },
+                { key: "i", value: "i14" }
+            ]
+        },
+
+
+        {
+            model_name: "unet",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample14" },
+                { key: "timestep", value: "timestep14" },
+                { key: "encoder_hidden_states", value: "encoder_hidden_states"}
+            ],
+            output_map: [{ key: "noise", value: "noise14" }]
+        },
+        {
+            model_name: "scheduler",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample14" },
+                { key: "noise", value: "noise14" },
+                { key: "i", value: "i14" }
+            ],
+            output_map: [
+                { key: "sample", value: "sample15" },
+                { key: "timestep", value: "timestep15" },
+                { key: "i", value: "i15" }
+            ]
+        },
+
+
+        {
+            model_name: "unet",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample15" },
+                { key: "timestep", value: "timestep15" },
+                { key: "encoder_hidden_states", value: "encoder_hidden_states"}
+            ],
+            output_map: [{ key: "noise", value: "noise15" }]
+        },
+        {
+            model_name: "scheduler",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample15" },
+                { key: "noise", value: "noise15" },
+                { key: "i", value: "i15" }
+            ],
+            output_map: [
+                { key: "sample", value: "sample16" },
+                { key: "timestep", value: "timestep16" },
+                { key: "i", value: "i16" }
+            ]
+        },
+
+
+        {
+            model_name: "unet",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample16" },
+                { key: "timestep", value: "timestep16" },
+                { key: "encoder_hidden_states", value: "encoder_hidden_states"}
+            ],
+            output_map: [{ key: "noise", value: "noise16" }]
+        },
+        {
+            model_name: "scheduler",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample16" },
+                { key: "noise", value: "noise16" },
+                { key: "i", value: "i16" }
+            ],
+            output_map: [
+                { key: "sample", value: "sample17" },
+                { key: "timestep", value: "timestep17" },
+                { key: "i", value: "i17" }
+            ]
+        },
+
+
+        {
+            model_name: "unet",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample17" },
+                { key: "timestep", value: "timestep17" },
+                { key: "encoder_hidden_states", value: "encoder_hidden_states"}
+            ],
+            output_map: [{ key: "noise", value: "noise17" }]
+        },
+        {
+            model_name: "scheduler",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample17" },
+                { key: "noise", value: "noise17" },
+                { key: "i", value: "i17" }
+            ],
+            output_map: [
+                { key: "sample", value: "sample18" },
+                { key: "timestep", value: "timestep18" },
+                { key: "i", value: "i18" }
+            ]
+        },
+
+
+        {
+            model_name: "unet",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample18" },
+                { key: "timestep", value: "timestep18" },
+                { key: "encoder_hidden_states", value: "encoder_hidden_states"}
+            ],
+            output_map: [{ key: "noise", value: "noise18" }]
+        },
+        {
+            model_name: "scheduler",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample18" },
+                { key: "noise", value: "noise18" },
+                { key: "i", value: "i18" }
+            ],
+            output_map: [
+                { key: "sample", value: "sample19" },
+                { key: "timestep", value: "timestep19" },
+                { key: "i", value: "i19" }
+            ]
+        },
+
+
+        {
+            model_name: "unet",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample19" },
+                { key: "timestep", value: "timestep19" },
+                { key: "encoder_hidden_states", value: "encoder_hidden_states"}
+            ],
+            output_map: [{ key: "noise", value: "noise19" }]
+        },
+        {
+            model_name: "scheduler",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample19" },
+                { key: "noise", value: "noise19" },
+                { key: "i", value: "i19" }
+            ],
+            output_map: [
+                { key: "sample", value: "sample20" },
+                { key: "timestep", value: "timestep20" },
+                { key: "i", value: "i20" }
+            ]
+        },
+
+
+        {
+            model_name: "unet",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample20" },
+                { key: "timestep", value: "timestep20" },
+                { key: "encoder_hidden_states", value: "encoder_hidden_states"}
+            ],
+            output_map: [{ key: "noise", value: "noise20" }]
+        },
+        {
+            model_name: "scheduler",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample20" },
+                { key: "noise", value: "noise20" },
+                { key: "i", value: "i20" }
+            ],
+            output_map: [
+                { key: "sample", value: "sample21" },
+                { key: "timestep", value: "timestep21" },
+                { key: "i", value: "i21" }
+            ]
+        },
+
+
+        {
+            model_name: "unet",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample21" },
+                { key: "timestep", value: "timestep21" },
+                { key: "encoder_hidden_states", value: "encoder_hidden_states"}
+            ],
+            output_map: [{ key: "noise", value: "noise21" }]
+        },
+        {
+            model_name: "scheduler",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample21" },
+                { key: "noise", value: "noise21" },
+                { key: "i", value: "i21" }
+            ],
+            output_map: [
+                { key: "sample", value: "sample22" },
+                { key: "timestep", value: "timestep22" },
+                { key: "i", value: "i22" }
+            ]
+        },
+
+
+        {
+            model_name: "unet",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample22" },
+                { key: "timestep", value: "timestep22" },
+                { key: "encoder_hidden_states", value: "encoder_hidden_states"}
+            ],
+            output_map: [{ key: "noise", value: "noise22" }]
+        },
+        {
+            model_name: "scheduler",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample22" },
+                { key: "noise", value: "noise22" },
+                { key: "i", value: "i22" }
+            ],
+            output_map: [
+                { key: "sample", value: "sample23" },
+                { key: "timestep", value: "timestep23" },
+                { key: "i", value: "i23" }
+            ]
+        },
+
+        {
+            model_name: "unet",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample23" },
+                { key: "timestep", value: "timestep23" },
+                { key: "encoder_hidden_states", value: "encoder_hidden_states"}
+            ],
+            output_map: [{ key: "noise", value: "noise23" }]
+        },
+        {
+            model_name: "scheduler",
+            model_version: -1,
+            input_map: [
+                { key: "sample", value: "sample23" },
+                { key: "noise", value: "noise23" },
+                { key: "i", value: "i23" }
+            ],
+            output_map: [
+                { key: "sample", value: "sample24" }
+            ]
+        },
+        {
+            model_name: "vae",
+            model_version: -1,
+            input_map: [{ key: "z", value: "sample24" }],
+            output_map: [{ key: "image", value: "output" }]
+        }
+    ]
+}

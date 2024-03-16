@@ -1,0 +1,41 @@
+
+name: "scheduler"
+backend: "python"
+max_batch_size: 0
+default_model_filename: "scheduler.py"
+input: [
+    {
+        name: "sample",
+        data_type: TYPE_FP32,
+        dims: [-1, 4, 64, 64]
+    },
+    {
+        name: "noise",
+        data_type: TYPE_FP32,
+        dims: [-1, 4, 64, 64]
+    },
+    {
+        name: "i",
+        data_type: TYPE_UINT8,
+        dims: [1]
+    }
+]
+output: [
+    {
+        name: "sample",
+        data_type: TYPE_FP32,
+        dims: [-1, 4, 64, 64]
+    },
+    {
+        name: "timestep",
+        data_type: TYPE_INT32,
+        dims: [1]
+    },
+    {
+        name: "i",
+        data_type: TYPE_UINT8,
+        dims: [1]
+    }
+]
+
+

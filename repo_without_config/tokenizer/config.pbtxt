@@ -1,0 +1,7 @@
+name: "tokenizer"
+backend: "python"
+max_batch_size: 0
+default_model_filename: "tokenizer.py"
+# ...으로 처리된 부분에 적합한 코드를 넣어주세요.
+input: [...]
+output: [...]

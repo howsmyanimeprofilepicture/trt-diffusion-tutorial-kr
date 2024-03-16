@@ -1,0 +1,7 @@
+name: "vae"
+platform: "tensorrt_plan"
+default_model_filename: "vae.plan"
+max_batch_size: 0
+# ...으로 처리된 부분에 적합한 코드를 넣어주세요.
+input: [...]
+output: [...]
